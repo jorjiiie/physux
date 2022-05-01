@@ -67,3 +67,6 @@ build/
 
 #vscode (ew)
 .vscode
+
+#random 
+tmp/
