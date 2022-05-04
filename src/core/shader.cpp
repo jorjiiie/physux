@@ -7,26 +7,25 @@ GLuint Shader::compile_shader(std::string shader_path, GLenum type) {
 	FILE *source_file = std::fopen(shader_path.c_str(), "rb");
 
 	throw_if(source_file == NULL, "Failed to open shader file " + shader_path);
+	char *shader_source;
+	long len;
 
-    char *shader_source;
-    long len;
+	fseek(source_file, 0, SEEK_END);
+	len = ftell(source_file);
 
-    fseek(source_file, 0, SEEK_END);
-    len = ftell(source_file);
+	ASSERT(len > 0, "baba");
 
-    ASSERT(len > 0, "baba");
+	fseek(source_file, 0, SEEK_SET);
 
-    fseek(source_file, 0, SEEK_SET);
+	shader_source = (char* ) calloc(1, len);
 
-    shader_source = (char* ) calloc(1, len);
+	ASSERT(shader_source != NULL, "you suck at programming?");
 
-    ASSERT(shader_source != NULL, "you suck at programming?");
+	fread(shader_source, 1, len, source_file);
 
-    fread(shader_source, 1, len, source_file);
+	ASSERT(strlen(shader_source) > 0, "yoinks");
 
-    ASSERT(strlen(shader_source) > 0, "yoinks");
-
-    fclose(source_file);
+	fclose(source_file);
 
 	GLuint shader;
 	shader = glCreateShader(type);
@@ -36,17 +35,17 @@ GLuint Shader::compile_shader(std::string shader_path, GLenum type) {
 
 	int success;
 	char infoLog[512];
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if(!success)
-    {
-        glGetShaderInfoLog(shader, 512, NULL, infoLog);
-        std::cerr << infoLog << std::endl;
-        throw_if(1, "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n");
-    }
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+	if(!success)
+	{
+	    glGetShaderInfoLog(shader, 512, NULL, infoLog);
+	    std::cerr << infoLog << std::endl;
+	    throw_if(1, "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n");
+	}
 
-    free(shader_source);
+	free(shader_source);
 
-    return shader;
+	return shader;
 }
 
 Shader::Shader(std::string vs_path, std::string fs_path) {
