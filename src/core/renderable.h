@@ -7,10 +7,13 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#include "shader.h"
+
 class Renderable {
 	private:
 		// model
 		GLuint vbo, ibo;
+		Shader shader;
 	public:
 		void render();
 };

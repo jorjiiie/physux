@@ -13,7 +13,6 @@
 #include <glm/glm.hpp>
 
 #define SHADER_COUNT SHADER_DEFAULT
-#define SHADER_MAX_SOURCE_SZ 20000
 
 class Shader {
 	public:
@@ -21,9 +20,8 @@ class Shader {
 			SHADER_NONE = 0,
 			SHADER_DEFAULT
 		};
-
 		Shader(std::string, std::string);
-
+		Shader(const Shader&);
 	private:
 		GLuint handle, vs_handle, fs_handle;
 		GLuint compile_shader(std::string, GLenum);

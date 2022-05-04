@@ -58,5 +58,5 @@ Shader::Shader(std::string vs_path, std::string fs_path) {
 	glAttachShader(handle, fs_handle);
 
 	glLinkProgram(handle);
-
 }
+Shader::Shader(const Shader& o) : handle(o.handle), vs_handle(o.vs_handle), fs_handle(o.fs_handle) {}

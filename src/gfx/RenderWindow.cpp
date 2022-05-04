@@ -45,16 +45,34 @@ RenderWindow::RenderWindow(int width, int height, std::string name) {
     glBindVertexArray(vao);
 }
 
+void RenderWindow::render() {
+    // render all renderables
+
+    // generate camera stuff?
+
+    // can put them all into temp rendering arrays
+    // i think that is faster than binding a ton of vbos
+    std::vector<GLfloat> vertex;
+    for (auto prend : objects) {
+        // prend->render();
+    }
+}
 
 void RenderWindow::main_loop() {
 
+    auto prev = util::clock();
     while(!glfwWindowShouldClose(window))
     {
+        auto now = util::clock();
+        double elapsed = util::elapsed(prev, now);
+        prev = util::clock();
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         glClear(GL_COLOR_BUFFER_BIT);
         
+
+        this->render();
       
         glfwSwapBuffers(window);
 

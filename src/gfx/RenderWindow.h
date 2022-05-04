@@ -32,6 +32,9 @@ class RenderWindow {
 		// each shader has a vao kind of, and then you bind the vbos to the vaos
 		GLuint vao;
 		std::vector<std::shared_ptr<Renderable> > objects;
+		
+		// instead we have pointers to shaders?!?!?!?!?! its honestly fine to 
+		// have a shader per renderable as its only 3 ints
 		static Shader shaders[Shader::SHADER_COUNT];
 
 		glm::mat4 cam_projection, cam_view;
@@ -47,6 +50,8 @@ class RenderWindow {
 		RenderWindow(int, int, std::string);
 		// maybe render should take a vector of 'drawables'
 		void render();
+		// one thread handles ticks and another handles rendering?
+		// dont do that because i dont know why we need that yet
 		void update();
 		void tick();
 		void add_object(Renderable);
