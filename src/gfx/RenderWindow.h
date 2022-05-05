@@ -31,12 +31,9 @@ class RenderWindow {
 		Button keyboard_buttons[GLFW_KEY_LAST];
 		// each shader has a vao kind of, and then you bind the vbos to the vaos
 		GLuint vao;
+		GLuint vbo;
 		std::vector<std::shared_ptr<Renderable> > objects;
 		
-		// instead we have pointers to shaders?!?!?!?!?! its honestly fine to 
-		// have a shader per renderable as its only 3 ints
-		static Shader shaders[Shader::SHADER_COUNT];
-
 		glm::mat4 cam_projection, cam_view;
 
 	protected:
@@ -59,6 +56,7 @@ class RenderWindow {
 		static void initGlfw();
 		static void init_shaders();
 
+		void init_test();
 		// static RenderWindow* self;
 };
 

@@ -16,15 +16,23 @@
 
 class Shader {
 	public:
+		// this design is probably not the best for adding a lot of shaders but its fine
 		enum ShaderType {
 			SHADER_NONE = 0,
 			SHADER_DEFAULT
 		};
 		Shader(std::string, std::string);
 		Shader(const Shader&);
+
+		static void init_shaders();
+
+		static std::shared_ptr<Shader> shaders[SHADER_COUNT + 1];
 	private:
 		GLuint handle, vs_handle, fs_handle;
 		GLuint compile_shader(std::string, GLenum);
+
+		Shader& operator=(const Shader&);
+
 };
 
 #endif

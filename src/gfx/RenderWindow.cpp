@@ -4,7 +4,7 @@
 #include "../core/debug.h"
 
 void RenderWindow::initGlfw() {
-	glfwInit();
+    glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -17,13 +17,13 @@ void RenderWindow::init_shaders() {
 }
 RenderWindow::RenderWindow(int width, int height, std::string name) {
 
-	ASSERT(width > 0 && height > 0, "Invalid dimensions/name for window");
-	
+    ASSERT(width > 0 && height > 0, "Invalid dimensions/name for window");
+
     window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
 
     throw_if(window == NULL, "Failed to create glfw window");
 
-	glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(window);
 
 
     int res = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
@@ -31,7 +31,7 @@ RenderWindow::RenderWindow(int width, int height, std::string name) {
     throw_if(res == 0, "Failed to load glad");
 
 
-	glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(window);
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -43,6 +43,8 @@ RenderWindow::RenderWindow(int width, int height, std::string name) {
 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
+
+    // glGenBuffers(GL_ARRAY_BUFFER, &vbo);
 }
 
 void RenderWindow::render() {
@@ -52,10 +54,14 @@ void RenderWindow::render() {
 
     // can put them all into temp rendering arrays
     // i think that is faster than binding a ton of vbos
-    std::vector<GLfloat> vertex;
+    std::vector<GLfloat> data;
+    // std::vector<
     for (auto prend : objects) {
-        // prend->render();
+        // prend->add_data(data);
     }
+
+    std::cout << "hi lol\n";
+    // glVertexAttribPointer(0);
 }
 
 void RenderWindow::main_loop() {
@@ -79,6 +85,9 @@ void RenderWindow::main_loop() {
         glfwPollEvents();    
     }
 
-
 }
 
+void RenderWindow::init_test() {
+    // add the render objects to the thing
+    
+}

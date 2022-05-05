@@ -7,9 +7,9 @@
 #include <cmath>
 
 struct v3d {
-	double x,y,z;
+	float x,y,z;
 	v3d() : x(0), y(0), z(0) {}
-	v3d(double x, double y, double z) : x(x), y(y), z(z) {}
+	v3d(float x, float y, float z) : x(x), y(y), z(z) {}
 	v3d(const v3d& o) : x(o.x), y(o.y), z(o.z) {}
 	v3d& operator=(const v3d& o) {
 		this->x = o.x;

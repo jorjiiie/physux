@@ -8,14 +8,19 @@
 #include <glm/glm.hpp>
 
 #include "shader.h"
+#include "v3d.h"
+#include "triangle.h"
 
 class Renderable {
-	private:
-		// model
-		GLuint vbo, ibo;
-		Shader shader;
+
+	protected:
+		std::vector<Triangle> vertices;
+		std::shared_ptr<Shader> shader;
+
 	public:
+		Renderable(std::shared_ptr<Shader>);
 		void render();
+		void add_data();
 };
 
 #endif
