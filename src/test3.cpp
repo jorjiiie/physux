@@ -20,8 +20,10 @@ int main() {
 
 	Shader::init_shaders();
 
+	std::cerr << "MADE IT PAST THIS PART" << std::endl;
 	joe.init_test();
 
+	std::cout << sizeof(Triangle) << std::endl;
 	joe.main_loop();
 
 

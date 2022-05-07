@@ -72,3 +72,7 @@ void Shader::init_shaders() {
 
 
 Shader::Shader(const Shader& o) : handle(o.handle), vs_handle(o.vs_handle), fs_handle(o.fs_handle) {}
+
+GLuint Shader::get_program() {
+	return handle;
+}

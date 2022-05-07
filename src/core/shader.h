@@ -24,6 +24,7 @@ class Shader {
 		Shader(std::string, std::string);
 		Shader(const Shader&);
 
+		GLuint get_program();
 		static void init_shaders();
 
 		static std::shared_ptr<Shader> shaders[SHADER_COUNT + 1];

@@ -14,11 +14,11 @@
 class Renderable {
 
 	protected:
-		std::vector<Triangle> vertices;
+		std::vector<Triangle> mesh;
 		std::shared_ptr<Shader> shader;
-
+		GLuint vbo;
 	public:
-		Renderable(std::shared_ptr<Shader>);
+		Renderable(std::vector<Triangle>, std::shared_ptr<Shader>);
 		void render();
 		void add_data();
 };
