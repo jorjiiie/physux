@@ -23,7 +23,6 @@ void Renderable::render() {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	
-	std::cerr << mesh.size() << std::endl;
 	glVertexAttribPointer(0,3,GL_FLOAT, GL_FALSE, sizeof(Triangle::Point), (const void*) 0);
 	glVertexAttribPointer(1,3,GL_FLOAT, GL_FALSE, sizeof(Triangle::Point), (const void*) (sizeof (v3d)));
 

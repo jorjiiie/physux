@@ -43,7 +43,8 @@ GLuint Shader::compile_shader(std::string shader_path, GLenum type) {
 	{
 	    glGetShaderInfoLog(shader, 512, NULL, infoLog);
 	    std::cerr << infoLog << std::endl;
-	    throw_if(1, "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n");
+	    std::string errmsg =  "ERROR::SHADER::" + std::string(type == GL_VERTEX_SHADER ? "VERTEX":"FRAGMENT") +"COMPILATION FAILED";
+	    throw_if(1, errmsg);
 	}
 
 	free(shader_source);

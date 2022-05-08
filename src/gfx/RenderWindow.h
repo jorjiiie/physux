@@ -10,31 +10,35 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/string_cast.hpp>
+
 
 #include "../core/renderable.h"
 #include "../core/shader.h"
 #include "../core/tangible.h"
 #include "../core/util.h"
 
-struct Button {
-	bool pressed;
-	int last_tick, pressed_tick;
-};
-
-
 
 class RenderWindow {
 	private:
 		GLFWwindow* window;
 		int mouseX, mouseY;
-		Button mouse_buttons[GLFW_MOUSE_BUTTON_LAST];
-		Button keyboard_buttons[GLFW_KEY_LAST];
+		int mouse_buttons[GLFW_MOUSE_BUTTON_LAST];
+		int keyboard_buttons[GLFW_KEY_LAST];
 		// each shader has a vao kind of, and then you bind the vbos to the vaos
 		GLuint vao;
 		GLuint vbo;
+		GLuint mvp_uniform;
 		std::vector<std::shared_ptr<Renderable> > objects;
-		
-		glm::mat4 cam_projection, cam_view;
+
+		int current_tick;
+
+		int d_width, d_height;
+
+		glm::vec3 cam_pos;
+		double cam_theta, cam_phi;
 
 	protected:
 		static void key_callback(GLFWwindow*, int, int, int, int);

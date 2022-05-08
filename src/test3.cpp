@@ -16,7 +16,7 @@
 int main() {
 
 	RenderWindow::initGlfw();
-	RenderWindow joe(1920, 1200, "hola");
+	RenderWindow joe(800, 600, "hola");
 
 	Shader::init_shaders();
 

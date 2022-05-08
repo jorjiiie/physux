@@ -19,6 +19,8 @@ RenderWindow::RenderWindow(int width, int height, std::string name) {
 
     ASSERT(width > 0 && height > 0, "Invalid dimensions/name for window");
 
+    d_width = width;
+    d_height= height;
     window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
 
     throw_if(window == NULL, "Failed to create glfw window");
@@ -46,31 +48,57 @@ RenderWindow::RenderWindow(int width, int height, std::string name) {
 
     glEnable(GL_MULTISAMPLE);  
     // glEnable(GL_CULL_FACE);  
+    std::cerr << d_width << " " << d_height << "\n";
 
-    // glGenBuffers(GL_ARRAY_BUFFER, &vbo);
 }
 
 void RenderWindow::render() {
     // render all renderables
 
     // generate camera stuff?
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float) d_width / (float) d_height, 0.1f, 200.0f);
+
+    glm::mat4 view = glm::lookAt(
+        glm::vec3(1,1,0),
+        glm::vec3(0,0,0),
+        glm::vec3(0,1,0)
+
+        );
+    glm::mat4 Model = glm::mat4(1.0f);
+
+    glm::mat4 transform = projection * view * glm::mat4(1.0f);
+
+    glUniformMatrix4fv(mvp_uniform, 1, GL_FALSE, &transform[0][0]);
+
+
+    std::cerr << glm::to_string(transform) << std::endl;
 
     // can put them all into temp rendering arrays
     // i think that is faster than binding a ton of vbos
-    std::vector<GLfloat> data;
     int cnt=0;
-    // std::vector<
     for (auto prend : objects) {
-        // prend->add_data(data);
         prend->render();
-        std::cout << "rendering " << ++cnt << std::endl;
+        // std::cout << "rendering " << ++cnt << std::endl;
     }
 
     // std::cout << "hi lol" << std::endl;
     // glVertexAttribPointer(0);
 }
 
+void RenderWindow::tick() {
+    // poll the events
+    // check for inputs mess w camera pos
+    // also does interactions and movement here
+
+    //
+
+
+
+}
 void RenderWindow::main_loop() {
+    // adjust for camera new positions
+    mvp_uniform = glGetUniformLocation(Shader::shaders[Shader::SHADER_DEFAULT]->get_program(), "mvp");
+    std::cerr << mvp_uniform << " mvp uniform" << std::endl;
 
     auto prev = util::clock();
     while(!glfwWindowShouldClose(window))
@@ -84,7 +112,10 @@ void RenderWindow::main_loop() {
         glClear(GL_COLOR_BUFFER_BIT);
         
 
+        // should have time values no?
+        this->tick();
         this->render();
+
       
         glfwSwapBuffers(window);
 

@@ -9,6 +9,7 @@ include_directories(lib/glad)
 # include(lib/linmath.h)
 
 add_definitions(-DGL_SILENCE_DEPRECATION)
+
 if (APPLE) 
     list(APPEND EXTRA_LIBS
         "-framework OpenGL"

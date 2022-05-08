@@ -20,7 +20,6 @@ class Renderable {
 	public:
 		Renderable(std::vector<Triangle>, std::shared_ptr<Shader>);
 		void render();
-		void add_data();
 };
 
 #endif
