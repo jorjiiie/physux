@@ -8,10 +8,10 @@ void RenderWindow::scroll_callback(GLFWwindow* window, double x, double y) {
 // key press events
 void RenderWindow::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	// pressed tick idk if this matters but whater
-	// if (action == GLFW_PRESS)
-		// keyboard_buttons[key] = current_tick;
-	// if (action == GLFW_RELEASE)
-		// keyboard_buttons[key] = 0;
+	if (action == GLFW_PRESS)
+		keyboard_buttons[key] = current_tick;
+	if (action == GLFW_RELEASE)
+		keyboard_buttons[key] = 0;
 }
 
 //resize events i think

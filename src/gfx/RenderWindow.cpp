@@ -35,11 +35,6 @@ RenderWindow::RenderWindow(int width, int height, std::string name) {
 
     glfwMakeContextCurrent(window);
 
-    glfwSetKeyCallback(window, key_callback);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetMouseButtonCallback(window, mouse_button_callback);
-    glfwSetCursorPosCallback(window, cursor_position_callback);
-    glfwSetScrollCallback(window, scroll_callback);
 
     glViewport(0,0,height,width);
 
@@ -49,6 +44,23 @@ RenderWindow::RenderWindow(int width, int height, std::string name) {
     glEnable(GL_MULTISAMPLE);  
     // glEnable(GL_CULL_FACE);  
     std::cerr << d_width << " " << d_height << "\n";
+
+}
+void RenderWindow::init_callbacks() {
+
+    /*
+    RenderWindow* mywindow = this;
+
+    auto func = (void (*) (GLFWwindow* w, int, int, int, int)) [](GLFWwindow* w, int key, int scancode, int action, int mods)
+    {
+        mywindow->key_callback(w, key, scancode, action, mods); 
+    };
+    glfwSetKeyCallback(window, func);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+    */
 
 }
 
@@ -91,6 +103,7 @@ void RenderWindow::tick() {
     // also does interactions and movement here
 
     //
+    // if ()
 
 
 

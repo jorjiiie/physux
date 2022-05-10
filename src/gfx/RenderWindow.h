@@ -27,6 +27,8 @@ class RenderWindow {
 		int mouseX, mouseY;
 		int mouse_buttons[GLFW_MOUSE_BUTTON_LAST];
 		int keyboard_buttons[GLFW_KEY_LAST];
+		double mouse_last[2];
+		double current_tick_mouse[2];
 		// each shader has a vao kind of, and then you bind the vbos to the vaos
 		GLuint vao;
 		GLuint vbo;
@@ -41,7 +43,7 @@ class RenderWindow {
 		double cam_theta, cam_phi;
 
 	protected:
-		static void key_callback(GLFWwindow*, int, int, int, int);
+		void key_callback(GLFWwindow*, int, int, int, int);
 		static void framebuffer_size_callback(GLFWwindow*, int, int);
 		static void scroll_callback(GLFWwindow*, double, double);
 		static void mouse_button_callback(GLFWwindow*, int, int, int);
@@ -49,6 +51,7 @@ class RenderWindow {
 
 	public:
 		RenderWindow(int, int, std::string);
+		void init_callbacks();
 		// maybe render should take a vector of 'drawables'
 		void render();
 		// one thread handles ticks and another handles rendering?
