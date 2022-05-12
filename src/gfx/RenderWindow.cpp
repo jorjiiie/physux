@@ -77,6 +77,18 @@ RenderWindow::RenderWindow(int width, int height, std::string name) {
         Global::window_map[window]->scroll_callback(window, x, y);
     };
     glfwSetScrollCallback(window, scrollcall);
+
+    camera_focus_length = 1;
+
+    glfwGetCursorPos(window, &mouse_last[0], &mouse_last[1]);
+
+}
+
+glm::vec3 RenderWindow::calculate_look() {
+    return glm::vec3(cos(glm::radians(camera_phi)) * cos(glm::radians(camera_theta)),
+                     cos(glm::radians(camera_phi)) * sin(glm::radians(camera_theta)),
+                     sin(glm::radians(camera_phi))
+                     );
 }
 
 void RenderWindow::render() {
@@ -85,20 +97,23 @@ void RenderWindow::render() {
     // generate camera stuff?
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float) d_width / (float) d_height, 0.1f, 200.0f);
 
+    // std::cerr << glm::to_string(camera_focus_length * calculate_look() + camera_position) << "\n";
+    
     glm::mat4 view = glm::lookAt(
-        glm::vec3(1,1,0),
-        glm::vec3(0,0,0),
-        glm::vec3(0,1,0)
-
+        camera_position,
+        camera_focus_length * calculate_look() + camera_position,
+        camera_up
         );
+        
     glm::mat4 Model = glm::mat4(1.0f);
 
     glm::mat4 transform = projection * view * glm::mat4(1.0f);
+    glUseProgram(Shader::shaders[Shader::SHADER_DEFAULT]->get_program());
 
     glUniformMatrix4fv(mvp_uniform, 1, GL_FALSE, &transform[0][0]);
 
 
-    // std::cerr << glm::to_string(transform) << std::endl;
+    // std::cerr << glm::to_string(transform[0]) << std::endl;
 
     // can put them all into temp rendering arrays
     // i think that is faster than binding a ton of vbos
@@ -111,22 +126,69 @@ void RenderWindow::render() {
     // std::cout << "hi lol" << std::endl;
     // glVertexAttribPointer(0);
 }
-
+void RenderWindow::norm_no_up_axis(glm::vec3& vec) {
+    // this just means no z, plus normalize
+    vec.z = 0;
+    vec = glm::normalize(vec);
+}
 void RenderWindow::tick() {
     // poll the events
     // check for inputs mess w camera pos
     // also does interactions and movement here
 
-    //
-    // if ()
+    current_tick++;
+
+    // std::cerr << keyboard_buttons[GLFW_KEY_A] << " abc\n";
+    if (keyboard_buttons[GLFW_KEY_A].pressed) {
+        // move to the side, so cross look with up
+        glm::vec3 side_vec = glm::cross(calculate_look(), camera_up);
+        norm_no_up_axis(side_vec);
+        std::cerr << glm::to_string(side_vec) << std::endl;
+        camera_position += -side_vec * MOVEMENT_SPEED;
+    }
+    
+    if (keyboard_buttons[GLFW_KEY_D].pressed) {
+        glm::vec3 side_vec = glm::cross(calculate_look(), camera_up);
+        norm_no_up_axis(side_vec);
+        camera_position += side_vec * MOVEMENT_SPEED;
+    }
+
+    if (keyboard_buttons[GLFW_KEY_W].pressed) {
+        glm::vec3 delta_vec = calculate_look();
+        norm_no_up_axis(delta_vec);
+        camera_position += delta_vec * MOVEMENT_SPEED;
+    }
+
+    if (keyboard_buttons[GLFW_KEY_S].pressed) {
+        glm::vec3 delta_vec = calculate_look();
+        norm_no_up_axis(delta_vec);
+        camera_position += -delta_vec * MOVEMENT_SPEED;
+    }
+
+
+    if (keyboard_buttons[GLFW_KEY_T].pressed && keyboard_buttons[GLFW_KEY_T].start_press + 30 > current_tick) {
+
+        if (cursor_enabled)
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        else
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        cursor_enabled = !cursor_enabled;
+
+    }
 
 
 
 }
 void RenderWindow::main_loop() {
     // adjust for camera new positions
+
+
     mvp_uniform = glGetUniformLocation(Shader::shaders[Shader::SHADER_DEFAULT]->get_program(), "mvp");
-    // std::cerr << mvp_uniform << " mvp uniform" << std::endl;
+    std::cerr << mvp_uniform << " mvp uniform" << std::endl;
+
+    GLuint test_uniform_loc = glGetUniformLocation(Shader::shaders[Shader::SHADER_DEFAULT]->get_program(), "test");
+
+    std::cerr << "test uniform " << test_uniform_loc << std::endl;
 
     auto prev = util::clock();
     while(!glfwWindowShouldClose(window))
@@ -153,6 +215,13 @@ void RenderWindow::main_loop() {
 }
 
 void RenderWindow::init_test() {
+
+    camera_position = glm::vec3(0,2,1);
+    camera_up = glm::vec3(0,0,1);
+
+    camera_theta = 0;
+    camera_phi= 0;
+
     // add the render objects to the thing
     v3d a(-0.5,-0.5,0);
     v3d b(0.5, -0.5, 0.0);

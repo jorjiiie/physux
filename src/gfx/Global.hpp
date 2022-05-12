@@ -10,4 +10,5 @@ struct GLFWwindow;
 struct Global {
 	inline static std::map<GLFWwindow*, RenderWindow*> window_map;
 };
+
 #endif

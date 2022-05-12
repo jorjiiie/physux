@@ -62,6 +62,8 @@ Shader::Shader(std::string vs_path, std::string fs_path) {
 
 	glLinkProgram(handle);
 
+	// add a throw if here
+
 	std::cerr << "successfully compiled shader" << std::endl;
 }
 

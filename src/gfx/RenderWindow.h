@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <cstdlib>
-#include <time.h>
 #include <math.h>
 #include <vector>
 
@@ -21,13 +20,17 @@
 #include "../core/tangible.h"
 #include "../core/util.h"
 
+struct Button {
+	int start_press;
+	bool pressed;
+};
 
 class RenderWindow {
 	private:
 		GLFWwindow* window;
 		int mouseX, mouseY;
-		int mouse_buttons[GLFW_MOUSE_BUTTON_LAST];
-		int keyboard_buttons[GLFW_KEY_LAST];
+		Button mouse_buttons[GLFW_MOUSE_BUTTON_LAST] = {};
+		Button keyboard_buttons[GLFW_KEY_LAST] = {};
 		double mouse_last[2];
 		double current_tick_mouse[2];
 		// each shader has a vao kind of, and then you bind the vbos to the vaos
@@ -42,9 +45,13 @@ class RenderWindow {
 
 		int d_width, d_height;
 
-		glm::vec3 cam_pos;
-		double cam_theta, cam_phi;
+		glm::vec3 camera_position, camera_up;
+		float camera_theta, camera_phi, camera_focus_length;
 
+		bool cursor_enabled = true;
+		glm::vec3 calculate_look();
+
+		void norm_no_up_axis(glm::vec3&);
 	protected:
 		void key_callback(GLFWwindow*, int, int, int, int);
 		void framebuffer_size_callback(GLFWwindow*, int, int);
@@ -53,6 +60,8 @@ class RenderWindow {
 		void cursor_position_callback(GLFWwindow*, double, double);
 
 	public:
+		static constexpr double CAMERA_SENSITIVITY = 0.05;
+		static constexpr float MOVEMENT_SPEED = 0.03;
 		RenderWindow(int, int, std::string);
 		// maybe render should take a vector of 'drawables'
 		void render();
