@@ -53,7 +53,7 @@ message(STATUS "headers: ${R_HEADER}")
 
 add_executable(renderer ${R_SOURCES} src/glad.c)
 
-target_compile_features(renderer PUBLIC cxx_std_11)
+target_compile_features(renderer PUBLIC cxx_std_17)
 
 target_link_libraries(renderer glfw glm ${EXTRA_LIBS})
 

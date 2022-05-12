@@ -17,7 +17,6 @@ int main() {
 
 	RenderWindow::initGlfw();
 	RenderWindow joe(800, 600, "hola");
-
 	Shader::init_shaders();
 
 	std::cerr << "MADE IT PAST THIS PART" << std::endl;

@@ -42,26 +42,41 @@ RenderWindow::RenderWindow(int width, int height, std::string name) {
     glBindVertexArray(vao);
 
     glEnable(GL_MULTISAMPLE);  
-    // glEnable(GL_CULL_FACE);  
-    std::cerr << d_width << " " << d_height << "\n";
+    glEnable(GL_CULL_FACE);  
 
-}
-void RenderWindow::init_callbacks() {
+    Global::window_map[window] = this;
 
-    /*
-    RenderWindow* mywindow = this;
 
-    auto func = (void (*) (GLFWwindow* w, int, int, int, int)) [](GLFWwindow* w, int key, int scancode, int action, int mods)
+    auto keycall = [](GLFWwindow* window, int key, int scancode, int action, int mods)
     {
-        mywindow->key_callback(w, key, scancode, action, mods); 
+        Global::window_map[window]->key_callback(window, key, scancode, action, mods); 
     };
-    glfwSetKeyCallback(window, func);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetMouseButtonCallback(window, mouse_button_callback);
-    glfwSetCursorPosCallback(window, cursor_position_callback);
-    glfwSetScrollCallback(window, scroll_callback);
-    */
+    glfwSetKeyCallback(window, keycall);
 
+    auto framebuffercall = [](GLFWwindow* window, int width, int height)
+    {
+        Global::window_map[window]->framebuffer_size_callback(window, width, height);
+    };
+    glfwSetFramebufferSizeCallback(window, framebuffercall);
+
+    auto mousebuttoncall = [](GLFWwindow* window, int button, int action, int mods)
+    {
+        Global::window_map[window]->mouse_button_callback(window, button, action, mods);
+    };
+    glfwSetMouseButtonCallback(window, mousebuttoncall);
+
+
+    auto cursorpositioncall = [](GLFWwindow* window, double x, double y) 
+    {
+        Global::window_map[window]->cursor_position_callback(window, x, y);
+    };
+    glfwSetCursorPosCallback(window, cursorpositioncall);
+    
+    auto scrollcall = [](GLFWwindow* window, double x, double y) 
+    {
+        Global::window_map[window]->scroll_callback(window, x, y);
+    };
+    glfwSetScrollCallback(window, scrollcall);
 }
 
 void RenderWindow::render() {
@@ -83,7 +98,7 @@ void RenderWindow::render() {
     glUniformMatrix4fv(mvp_uniform, 1, GL_FALSE, &transform[0][0]);
 
 
-    std::cerr << glm::to_string(transform) << std::endl;
+    // std::cerr << glm::to_string(transform) << std::endl;
 
     // can put them all into temp rendering arrays
     // i think that is faster than binding a ton of vbos
@@ -111,7 +126,7 @@ void RenderWindow::tick() {
 void RenderWindow::main_loop() {
     // adjust for camera new positions
     mvp_uniform = glGetUniformLocation(Shader::shaders[Shader::SHADER_DEFAULT]->get_program(), "mvp");
-    std::cerr << mvp_uniform << " mvp uniform" << std::endl;
+    // std::cerr << mvp_uniform << " mvp uniform" << std::endl;
 
     auto prev = util::clock();
     while(!glfwWindowShouldClose(window))

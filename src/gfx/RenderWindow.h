@@ -14,6 +14,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include "Global.hpp"
 
 #include "../core/renderable.h"
 #include "../core/shader.h"
@@ -34,6 +35,8 @@ class RenderWindow {
 		GLuint vbo;
 		GLuint mvp_uniform;
 		std::vector<std::shared_ptr<Renderable> > objects;
+		std::vector<std::shared_ptr<Tangible> > scene_physics;
+
 
 		int current_tick;
 
@@ -44,14 +47,13 @@ class RenderWindow {
 
 	protected:
 		void key_callback(GLFWwindow*, int, int, int, int);
-		static void framebuffer_size_callback(GLFWwindow*, int, int);
-		static void scroll_callback(GLFWwindow*, double, double);
-		static void mouse_button_callback(GLFWwindow*, int, int, int);
-		static void cursor_position_callback(GLFWwindow*, double, double);
+		void framebuffer_size_callback(GLFWwindow*, int, int);
+		void scroll_callback(GLFWwindow*, double, double);
+		void mouse_button_callback(GLFWwindow*, int, int, int);
+		void cursor_position_callback(GLFWwindow*, double, double);
 
 	public:
 		RenderWindow(int, int, std::string);
-		void init_callbacks();
 		// maybe render should take a vector of 'drawables'
 		void render();
 		// one thread handles ticks and another handles rendering?
