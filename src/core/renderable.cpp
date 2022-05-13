@@ -10,12 +10,24 @@ Renderable::Renderable(std::vector<Triangle> p_mesh, std::shared_ptr<Shader> psh
     glBufferData(GL_ARRAY_BUFFER, sizeof(Triangle) * mesh.size(), &mesh[0], GL_STREAM_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    position = glm::vec3(0,0,0);
 }
 
-
+void Renderable::update_position(const glm::vec3& pos) {
+	position = pos;
+}
 void Renderable::render() {
 	// render the stuffs
+
 	glUseProgram(shader->get_program());
+
+    GLuint mod_uniform = glGetUniformLocation(Shader::shaders[Shader::SHADER_DEFAULT]->get_program(), "model_pos");
+
+
+
+    glUniform3f(mod_uniform,position.x, position.y, position.z);
+
+    // set the offset
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	// glBufferSubData(GL_ARRAY_BUFFER, sizeof(Triangle) * mesh.size(), &mesh[0], GL_STREAM_DRAW);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Triangle) * mesh.size(), &mesh[0]);
@@ -30,7 +42,7 @@ void Renderable::render() {
 
 
 	glDisableVertexAttribArray(0);
-	// glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(1);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glUseProgram(0);

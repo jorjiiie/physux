@@ -19,7 +19,7 @@
 #include "../core/shader.h"
 #include "../core/tangible.h"
 #include "../core/util.h"
-
+#include "../core/ShapeFactory.h"
 struct Button {
 	int start_press;
 	bool pressed;

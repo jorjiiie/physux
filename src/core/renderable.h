@@ -6,6 +6,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include "shader.h"
 #include "v3d.h"
@@ -17,9 +19,11 @@ class Renderable {
 		std::vector<Triangle> mesh;
 		std::shared_ptr<Shader> shader;
 		GLuint vbo;
+		glm::vec3 position;
 	public:
 		Renderable(std::vector<Triangle>, std::shared_ptr<Shader>);
 		void render();
+		void update_position(const glm::vec3&);
 };
 
 #endif

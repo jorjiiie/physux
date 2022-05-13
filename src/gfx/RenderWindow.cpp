@@ -42,7 +42,7 @@ RenderWindow::RenderWindow(int width, int height, std::string name) {
     glBindVertexArray(vao);
 
     glEnable(GL_MULTISAMPLE);  
-    glEnable(GL_CULL_FACE);  
+    // glEnable(GL_CULL_FACE);  
 
     Global::window_map[window] = this;
 
@@ -82,6 +82,10 @@ RenderWindow::RenderWindow(int width, int height, std::string name) {
 
     glfwGetCursorPos(window, &mouse_last[0], &mouse_last[1]);
 
+
+    glEnable(GL_DEPTH_TEST);  
+    glDepthFunc(GL_LESS);  
+
 }
 
 glm::vec3 RenderWindow::calculate_look() {
@@ -94,6 +98,9 @@ glm::vec3 RenderWindow::calculate_look() {
 void RenderWindow::render() {
     // render all renderables
 
+    //clear z buffer
+
+
     // generate camera stuff?
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float) d_width / (float) d_height, 0.1f, 200.0f);
 
@@ -105,9 +112,8 @@ void RenderWindow::render() {
         camera_up
         );
         
-    glm::mat4 Model = glm::mat4(1.0f);
 
-    glm::mat4 transform = projection * view * glm::mat4(1.0f);
+    glm::mat4 transform = projection * view;
     glUseProgram(Shader::shaders[Shader::SHADER_DEFAULT]->get_program());
 
     glUniformMatrix4fv(mvp_uniform, 1, GL_FALSE, &transform[0][0]);
@@ -165,6 +171,14 @@ void RenderWindow::tick() {
         camera_position += -delta_vec * MOVEMENT_SPEED;
     }
 
+    if (keyboard_buttons[GLFW_KEY_LEFT_SHIFT].pressed) {
+        camera_position += -camera_up * MOVEMENT_SPEED;
+    }
+
+    if (keyboard_buttons[GLFW_KEY_SPACE].pressed) {
+        camera_position += camera_up * MOVEMENT_SPEED;
+    }
+
 
     if (keyboard_buttons[GLFW_KEY_T].pressed && keyboard_buttons[GLFW_KEY_T].start_press + 30 > current_tick) {
 
@@ -177,18 +191,24 @@ void RenderWindow::tick() {
     }
 
 
+    if (keyboard_buttons[GLFW_KEY_J].pressed) {
+        // move the first thing by 10 or smth
+        objects[0]->update_position(glm::vec3(1.0,1.0,1.0));
+    }
+
+    if (keyboard_buttons[GLFW_KEY_K].pressed) {
+        objects[0]->update_position(glm::vec3(0.0,0.0,0.0));
+
+    }
+
 
 }
 void RenderWindow::main_loop() {
     // adjust for camera new positions
 
 
-    mvp_uniform = glGetUniformLocation(Shader::shaders[Shader::SHADER_DEFAULT]->get_program(), "mvp");
+    mvp_uniform = glGetUniformLocation(Shader::shaders[Shader::SHADER_DEFAULT]->get_program(), "camera_mat");
     std::cerr << mvp_uniform << " mvp uniform" << std::endl;
-
-    GLuint test_uniform_loc = glGetUniformLocation(Shader::shaders[Shader::SHADER_DEFAULT]->get_program(), "test");
-
-    std::cerr << "test uniform " << test_uniform_loc << std::endl;
 
     auto prev = util::clock();
     while(!glfwWindowShouldClose(window))
@@ -199,7 +219,8 @@ void RenderWindow::main_loop() {
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-        glClear(GL_COLOR_BUFFER_BIT);
+        // clear buffers
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
         
 
         // should have time values no?
@@ -216,6 +237,7 @@ void RenderWindow::main_loop() {
 
 void RenderWindow::init_test() {
 
+    std::cerr << glm::to_string(glm::mat4(1.0f)) << std::endl;
     camera_position = glm::vec3(0,2,1);
     camera_up = glm::vec3(0,0,1);
 
@@ -223,9 +245,9 @@ void RenderWindow::init_test() {
     camera_phi= 0;
 
     // add the render objects to the thing
-    v3d a(-0.5,-0.5,0);
-    v3d b(0.5, -0.5, 0.0);
-    v3d c(0.0, 0.5, 0.0);
+    v3d a(-0.5,-0.5,1);
+    v3d b(0.5, -0.5, 1.0);
+    v3d c(0.0, 0.5, 1.0);
     v3d rgb(0.2, 0.6, 0.7);
 
     Triangle tri(a,b,c,rgb);
@@ -250,11 +272,23 @@ void RenderWindow::init_test() {
     // Triangle tri2(x,y,z,col1);
 
     // tri2.a.rgb = rgb;
+
+    v3d quad_a(1.0, 0, 5.0);
+    v3d quad_b(1.0,2.0,5.0);
+    v3d quad_d(1.0,0.0, 0.0);
+    v3d quad_c(1.0, 2.0, 0.0);
+
+    std::pair<Triangle, Triangle> mesh = ShapeFactory::generate_quad(quad_a,quad_b,quad_c,quad_d,col2);
+    std::vector<Triangle> abcbc = {mesh.first, mesh.second};
+
+
     std::vector<Triangle> vec = {tri}, vec2 = {tri2};
+    std::shared_ptr<Renderable> quad = std::make_shared<Renderable>(abcbc, Shader::shaders[Shader::SHADER_DEFAULT]);
     std::shared_ptr<Renderable> cool_triangle = std::make_shared<Renderable>(vec, Shader::shaders[Shader::SHADER_DEFAULT]);
     std::shared_ptr<Renderable> cool2 = std::make_shared<Renderable>(vec2, Shader::shaders[Shader::SHADER_DEFAULT]);
 
-    objects.push_back(cool_triangle);
-    objects.push_back(cool2);
+    // objects.push_back(cool_triangle);
+    // objects.push_back(cool2);
+    objects.push_back(quad);
     // objects.push_back(std::make_shared<Renderable>(vec2, Shader::shaders[Shader::SHADER_DEFAULT]));
 }
