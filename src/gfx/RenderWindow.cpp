@@ -149,7 +149,6 @@ void RenderWindow::tick() {
         // move to the side, so cross look with up
         glm::vec3 side_vec = glm::cross(calculate_look(), camera_up);
         norm_no_up_axis(side_vec);
-        std::cerr << glm::to_string(side_vec) << std::endl;
         camera_position += -side_vec * MOVEMENT_SPEED;
     }
     
@@ -273,6 +272,8 @@ void RenderWindow::init_test() {
 
     // tri2.a.rgb = rgb;
 
+
+    ShapeFactory::generate_sphere(5.0, v3d(0,0,0), 11, 10, v3d(1,1,1));
     v3d quad_a(1.0, 0, 5.0);
     v3d quad_b(1.0,2.0,5.0);
     v3d quad_d(1.0,0.0, 0.0);
@@ -282,13 +283,16 @@ void RenderWindow::init_test() {
     std::vector<Triangle> abcbc = {mesh.first, mesh.second};
 
 
+    std::vector<Triangle> sphere = ShapeFactory::generate_sphere(0.5, v3d(0,0,0), 63, 63, v3d(1,1,1));
+    std::cerr << "how many triangles? " << sphere.size() << " triangles!\n";
     std::vector<Triangle> vec = {tri}, vec2 = {tri2};
     std::shared_ptr<Renderable> quad = std::make_shared<Renderable>(abcbc, Shader::shaders[Shader::SHADER_DEFAULT]);
     std::shared_ptr<Renderable> cool_triangle = std::make_shared<Renderable>(vec, Shader::shaders[Shader::SHADER_DEFAULT]);
     std::shared_ptr<Renderable> cool2 = std::make_shared<Renderable>(vec2, Shader::shaders[Shader::SHADER_DEFAULT]);
 
+    std::shared_ptr<Renderable> cool3 = std::make_shared<Renderable>(sphere, Shader::shaders[Shader::SHADER_DEFAULT]);
     // objects.push_back(cool_triangle);
     // objects.push_back(cool2);
-    objects.push_back(quad);
+    objects.push_back(cool3);
     // objects.push_back(std::make_shared<Renderable>(vec2, Shader::shaders[Shader::SHADER_DEFAULT]));
 }

@@ -23,9 +23,7 @@ void Renderable::render() {
 
     GLuint mod_uniform = glGetUniformLocation(Shader::shaders[Shader::SHADER_DEFAULT]->get_program(), "model_pos");
 
-
-
-    glUniform3f(mod_uniform,position.x, position.y, position.z);
+    glUniform3f(mod_uniform, position.x, position.y, position.z);
 
     // set the offset
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);

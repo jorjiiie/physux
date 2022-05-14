@@ -7,7 +7,7 @@
 
 
 namespace ShapeFactory {
-	std::shared_ptr<Renderable> generate_sphere(double, glm::vec3&, int, int);
+	std::vector<Triangle> generate_sphere(double, const v3d&, int, int, const v3d&);
 	std::pair<Triangle, Triangle> generate_quad(const v3d&, const v3d&, const v3d&, const v3d&, const v3d&);
 
 }
