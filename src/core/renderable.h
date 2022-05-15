@@ -19,11 +19,14 @@ class Renderable {
 		std::vector<Triangle> mesh;
 		std::shared_ptr<Shader> shader;
 		GLuint vbo;
-		glm::vec3 position;
+		v3d position;
 	public:
+		Renderable();
+		// sphere constructor
+		Renderable(double radius, std::shared_ptr<Shader>);
 		Renderable(std::vector<Triangle>, std::shared_ptr<Shader>);
 		void render();
-		void update_position(const glm::vec3&);
+		void update_position(const v3d&);
 };
 
 #endif

@@ -5,7 +5,7 @@
 #define V3D_H
 
 #include <cmath>
-
+#include <iostream>
 struct v3d {
 	float x,y,z;
 	v3d() : x(0), y(0), z(0) {}
@@ -79,6 +79,7 @@ struct v3d {
 		return tmp*(this->dot(o)/(o.dot(o)));
 	}
 	bool operator==(const v3d& o) const {
+		// should have an epsilon here instead but whatever lmao
 		if (abs(x-o.x) > .0001) return false;
 		if (abs(y-o.y) > .0001) return false;
 		if (abs(z-o.z) > .0001) return false;
@@ -98,6 +99,7 @@ struct v3d {
 		}
 		return 0;
 	}
+
 };
 
 std::ostream& operator<<(std::ostream&, const v3d&);

@@ -16,12 +16,14 @@
 int main() {
 
 	RenderWindow::initGlfw();
+
 	RenderWindow joe(800, 600, "hola");
 	Shader::init_shaders();
 
 	std::cerr << "MADE IT PAST THIS PART" << std::endl;
-	joe.init_test();
+	// joe.init_test();
 
+	joe.test2();
 	std::cout << sizeof(Triangle) << std::endl;
 	joe.main_loop();
 

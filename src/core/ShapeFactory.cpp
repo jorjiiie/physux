@@ -9,9 +9,10 @@ std::vector<Triangle> ShapeFactory::generate_sphere(double radius, const v3d& po
 											int vslices, int hslices, const v3d& rgb) {
 
 	ASSERT(vslices > 0 && hslices > 0, "slice error man");
-	
+
 	std::vector<std::vector< v3d> > vertices(vslices+1, std::vector<v3d>(hslices+1));
 
+	std::cerr << rgb << " " << radius  << "\n";
 
 	double invV = 1.0 / vslices;
 	double invH = 1.0 / hslices;
@@ -29,6 +30,7 @@ std::vector<Triangle> ShapeFactory::generate_sphere(double radius, const v3d& po
 								 cos_phi * glm::sin(glm::radians(theta)),
 								 sin_phi) * radius;
 		}
+
 	}
 	std::vector<Triangle> mesh;
 
@@ -40,6 +42,7 @@ std::vector<Triangle> ShapeFactory::generate_sphere(double radius, const v3d& po
 		}
 	}
 	
+		std::cerr << mesh.size() << " mesh triangles!\n";
 	return mesh;
 }
 
@@ -49,6 +52,7 @@ std::pair<Triangle, Triangle> ShapeFactory::generate_quad(const v3d& a, const v3
 	// A&C are opposite, B&D are opposite;
 	// also no alpha!
 
+	// if you think about this, then youd be 100% able to use face culling but that is too much thinking
 	Triangle tri_alpha(a,b,c,rgb);
 
 	Triangle tri_beta(a,c,d,rgb);

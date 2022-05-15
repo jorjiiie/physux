@@ -2,12 +2,13 @@
 #define LOGGER_H
 
 #include <iostream>
+#include <vector>
 
-// use a factory LFG
+#include "../core/particle.h"
+
 class Logger {
-	int num_data;
-	string label;
-	map<string, double> data_points;
+	
+	std::vector<Particle> log_items;
 
 	public:
 		Logger(int);

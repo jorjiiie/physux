@@ -10,11 +10,7 @@ void RenderWindow::initGlfw() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, 4);
 }
-void RenderWindow::init_shaders() {
-    // find all the shaders
-    // RenderWindow::shaders[0] = NULL;
 
-}
 RenderWindow::RenderWindow(int width, int height, std::string name) {
 
     ASSERT(width > 0 && height > 0, "Invalid dimensions/name for window");
@@ -124,9 +120,14 @@ void RenderWindow::render() {
     // can put them all into temp rendering arrays
     // i think that is faster than binding a ton of vbos
     int cnt=0;
+    
+    for (auto prend : scene_objects) {
+        prend->mesh->render();
+        // std::cout << "rendering " << ++cnt << std::endl;
+    }
+    
     for (auto prend : objects) {
         prend->render();
-        // std::cout << "rendering " << ++cnt << std::endl;
     }
 
     // std::cout << "hi lol" << std::endl;
@@ -136,6 +137,28 @@ void RenderWindow::norm_no_up_axis(glm::vec3& vec) {
     // this just means no z, plus normalize
     vec.z = 0;
     vec = glm::normalize(vec);
+}
+
+void RenderWindow::physics_tick() {
+
+    std::vector<v3d> forces;
+    for (auto pobj : scene_objects) {
+        v3d cumulative_field(0,0,0);
+        for (auto pobj_ : scene_objects) {
+            if (pobj == pobj_)
+                continue;
+            cumulative_field += pobj_->physics->get_electric_field(*(pobj->physics));
+        }
+
+        pobj->physics->apply_field(cumulative_field);
+
+    }
+    std::cerr << "Current tick: " << current_tick << " current time: " << current_time << " ";
+    scene_objects[2]->log_dbg();
+    for (auto pobj : scene_objects) {
+        pobj->tick();
+    }
+
 }
 void RenderWindow::tick() {
     // poll the events
@@ -189,6 +212,12 @@ void RenderWindow::tick() {
 
     }
 
+    if (keyboard_buttons[GLFW_KEY_5].pressed) {
+        Global::TIME_STEP = 500 * Global::DEFAULT_TIME_STEP;
+    } else {
+        Global::TIME_STEP = Global::DEFAULT_TIME_STEP;
+    }
+    /*
 
     if (keyboard_buttons[GLFW_KEY_J].pressed) {
         // move the first thing by 10 or smth
@@ -199,11 +228,31 @@ void RenderWindow::tick() {
         objects[0]->update_position(glm::vec3(0.0,0.0,0.0));
 
     }
+    */
+
+    // have a key check for the advance one frame
+
+    bool advance_one = false;
+
+    if (keyboard_buttons[GLFW_KEY_PERIOD].pressed && keyboard_buttons[GLFW_KEY_PERIOD].held == false) {
+        advance_one == true;
+    }
+
+    if (!paused || advance_one) {
+        physics_tick();
+    }
+    current_time += Global::TIME_STEP;
 
 
 }
 void RenderWindow::main_loop() {
     // adjust for camera new positions
+
+    camera_position = glm::vec3(0,2,1);
+    camera_up = glm::vec3(0,0,1);
+
+    camera_theta = 0;
+    camera_phi= 0;
 
 
     mvp_uniform = glGetUniformLocation(Shader::shaders[Shader::SHADER_DEFAULT]->get_program(), "camera_mat");
@@ -273,7 +322,8 @@ void RenderWindow::init_test() {
     // tri2.a.rgb = rgb;
 
 
-    ShapeFactory::generate_sphere(5.0, v3d(0,0,0), 11, 10, v3d(1,1,1));
+
+    ShapeFactory::generate_sphere(5.0, v3d(0,0,0), 11, 10, v3d(1.0,1,1));
     v3d quad_a(1.0, 0, 5.0);
     v3d quad_b(1.0,2.0,5.0);
     v3d quad_d(1.0,0.0, 0.0);
@@ -283,7 +333,7 @@ void RenderWindow::init_test() {
     std::vector<Triangle> abcbc = {mesh.first, mesh.second};
 
 
-    std::vector<Triangle> sphere = ShapeFactory::generate_sphere(0.5, v3d(0,0,0), 63, 63, v3d(1,1,1));
+    std::vector<Triangle> sphere = ShapeFactory::generate_sphere(0.5, v3d(0,0,0), 63, 63, v3d(1,.65,.65));
     std::cerr << "how many triangles? " << sphere.size() << " triangles!\n";
     std::vector<Triangle> vec = {tri}, vec2 = {tri2};
     std::shared_ptr<Renderable> quad = std::make_shared<Renderable>(abcbc, Shader::shaders[Shader::SHADER_DEFAULT]);
@@ -296,3 +346,25 @@ void RenderWindow::init_test() {
     objects.push_back(cool3);
     // objects.push_back(std::make_shared<Renderable>(vec2, Shader::shaders[Shader::SHADER_DEFAULT]));
 }
+
+void RenderWindow::test2() {
+
+    std::shared_ptr<Particle> p = std::make_shared<Particle>(5,1,.5);
+    std::shared_ptr<Particle> p3 = std::make_shared<Particle>(-5, 1, .5);
+
+    std::shared_ptr<Particle> p2 = std::make_shared<Particle>(10, 3, .6);
+
+    p3->set_position(v3d(1,1,0));
+    p2->set_position(v3d(50,50,0));
+    p->physics->make_static();
+    p3->physics->make_static();
+    // std::cerr << "CHARGE: " << p3.physics->get_electric_field(*(p.physics)) << "\n";
+    // p.physics->apply_field(p3.physics->get_electric_field(*(p.physics)));
+    // p.tick();
+    // p.log_dbg();
+    scene_objects.push_back(p);
+    scene_objects.push_back(p3);
+    scene_objects.push_back(p2);
+}
+
+

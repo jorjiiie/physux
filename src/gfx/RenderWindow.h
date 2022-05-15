@@ -13,16 +13,18 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 
-#include "Global.hpp"
+#include "Global.h"
 
 #include "../core/renderable.h"
 #include "../core/shader.h"
 #include "../core/tangible.h"
 #include "../core/util.h"
 #include "../core/ShapeFactory.h"
+#include "../core/particle.h"
+
 struct Button {
 	int start_press;
-	bool pressed;
+	bool pressed, held;
 };
 
 class RenderWindow {
@@ -33,14 +35,16 @@ class RenderWindow {
 		Button keyboard_buttons[GLFW_KEY_LAST] = {};
 		double mouse_last[2];
 		double current_tick_mouse[2];
+
+		double current_time = 0;
 		// each shader has a vao kind of, and then you bind the vbos to the vaos
 		GLuint vao;
 		GLuint vbo;
 		GLuint mvp_uniform;
+
+		std::vector<std::shared_ptr<Particle> > scene_objects;
+
 		std::vector<std::shared_ptr<Renderable> > objects;
-		std::vector<std::shared_ptr<Tangible> > scene_physics;
-
-
 		int current_tick;
 
 		int d_width, d_height;
@@ -49,9 +53,12 @@ class RenderWindow {
 		float camera_theta, camera_phi, camera_focus_length;
 
 		bool cursor_enabled = true;
+
 		glm::vec3 calculate_look();
 
 		void norm_no_up_axis(glm::vec3&);
+
+		bool paused = false;
 	protected:
 		void key_callback(GLFWwindow*, int, int, int, int);
 		void framebuffer_size_callback(GLFWwindow*, int, int);
@@ -67,14 +74,13 @@ class RenderWindow {
 		void render();
 		// one thread handles ticks and another handles rendering?
 		// dont do that because i dont know why we need that yet
-		void update();
+		void physics_tick();
 		void tick();
-		void add_object(Renderable);
 		void main_loop();
 		static void initGlfw();
-		static void init_shaders();
 
 		void init_test();
+		void test2();
 		// static RenderWindow* self;
 };
 

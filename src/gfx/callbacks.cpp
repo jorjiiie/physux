@@ -10,8 +10,11 @@ void RenderWindow::key_callback(GLFWwindow* window, int key, int scancode, int a
 	// pressed tick idk if this matters but whater
 
 	if (action == GLFW_PRESS) {
-		if (keyboard_buttons[key].pressed)
+		if (keyboard_buttons[key].pressed) {
+			keyboard_buttons[key].held = true;
 			return;
+		}
+		keyboard_buttons[key].held = false;
 		keyboard_buttons[key].start_press = current_tick;
 		keyboard_buttons[key].pressed = 1;
 	}
