@@ -155,19 +155,35 @@ void RenderWindow::physics_tick() {
     }
     std::cerr << "Current tick: " << current_tick << " current time: " << current_time << " ";
     scene_objects[2]->log_dbg();
+
+    std::vector<std::shared_ptr<Particle> > to_remove;
+
+    //heterogenous data types of the same type :skull:
+    v3d cam_pos_tmp(camera_position.x, camera_position.y, camera_position.z);
     for (auto pobj : scene_objects) {
         pobj->tick();
-    }
+        v3d r = cam_pos_tmp - pobj->physics->get_pos();
 
+        // if more than 100k units away just remove
+        if (r.dot(r) > 100000.0) {
+            to_remove.push_back(pobj);
+        }
+    }
+    for (auto pobj : to_remove) {
+
+    }
 }
+
 void RenderWindow::tick() {
     // poll the events
     // check for inputs mess w camera pos
     // also does interactions and movement here
 
     current_tick++;
+    logger.log_data();
 
-    // std::cerr << keyboard_buttons[GLFW_KEY_A] << " abc\n";
+    // should have submethods for "press and hold", "single press" and "pressed" to make this more readable
+    // is_pressed_and_hold(key, seconds), is_pressed_single(key), is_pressed(key)
     if (keyboard_buttons[GLFW_KEY_A].pressed) {
         // move to the side, so cross look with up
         glm::vec3 side_vec = glm::cross(calculate_look(), camera_up);
@@ -202,7 +218,8 @@ void RenderWindow::tick() {
     }
 
 
-    if (keyboard_buttons[GLFW_KEY_T].pressed && keyboard_buttons[GLFW_KEY_T].start_press + 30 > current_tick) {
+    if (keyboard_buttons[GLFW_KEY_T].pressed && !keyboard_buttons[GLFW_KEY_T].held) {
+        keyboard_buttons[GLFW_KEY_T].held = true;
 
         if (cursor_enabled)
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -212,10 +229,28 @@ void RenderWindow::tick() {
 
     }
 
+    int time_steps = 1;
     if (keyboard_buttons[GLFW_KEY_5].pressed) {
         Global::TIME_STEP = 500 * Global::DEFAULT_TIME_STEP;
     } else {
         Global::TIME_STEP = Global::DEFAULT_TIME_STEP;
+    }
+    if (keyboard_buttons[GLFW_KEY_0].pressed && !keyboard_buttons[GLFW_KEY_0].held) {
+        keyboard_buttons[GLFW_KEY_0].held = true;
+        paused = !paused;
+    }
+
+    if (keyboard_buttons[GLFW_KEY_2].pressed) {
+        time_steps = 500;
+    }
+
+    if (keyboard_buttons[GLFW_KEY_C].pressed && !keyboard_buttons[GLFW_KEY_C].held) {
+        keyboard_buttons[GLFW_KEY_C].held = true;
+        // add a thing at one unit in the look direction
+        std::shared_ptr<Particle> add_particle = std::make_shared<Particle>(-5,1, 0.5);
+        glm::vec3 particle_position = calculate_look() + camera_position;
+        add_particle->set_position(v3d(particle_position.x, particle_position.y, particle_position.z));
+        scene_objects.push_back(add_particle);
     }
     /*
 
@@ -234,14 +269,24 @@ void RenderWindow::tick() {
 
     bool advance_one = false;
 
-    if (keyboard_buttons[GLFW_KEY_PERIOD].pressed && keyboard_buttons[GLFW_KEY_PERIOD].held == false) {
-        advance_one == true;
+    if (keyboard_buttons[GLFW_KEY_PERIOD].pressed && !keyboard_buttons[GLFW_KEY_PERIOD].held) {
+        keyboard_buttons[GLFW_KEY_PERIOD].held = true;
+
+        advance_one = true;
+    }
+    if (keyboard_buttons[GLFW_KEY_PERIOD].pressed && keyboard_buttons[GLFW_KEY_PERIOD].start_press + 60 < current_tick) {
+        advance_one = true;
+        Global::TIME_STEP = Global::DEFAULT_TIME_STEP * 0.5;
     }
 
     if (!paused || advance_one) {
-        physics_tick();
+        while (time_steps--) {
+            physics_tick();
+            current_time += Global::TIME_STEP;
+        }
+
     }
-    current_time += Global::TIME_STEP;
+    Global::TIME_STEP = Global::DEFAULT_TIME_STEP;
 
 
 }
@@ -355,7 +400,7 @@ void RenderWindow::test2() {
     std::shared_ptr<Particle> p2 = std::make_shared<Particle>(10, 3, .6);
 
     p3->set_position(v3d(1,1,0));
-    p2->set_position(v3d(50,50,0));
+    p2->set_position(v3d(20,20,0));
     p->physics->make_static();
     p3->physics->make_static();
     // std::cerr << "CHARGE: " << p3.physics->get_electric_field(*(p.physics)) << "\n";
@@ -365,6 +410,8 @@ void RenderWindow::test2() {
     scene_objects.push_back(p);
     scene_objects.push_back(p3);
     scene_objects.push_back(p2);
+    
+    logger.attach(p2);
 }
 
 

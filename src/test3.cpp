@@ -15,16 +15,25 @@
 
 int main() {
 
+
+
+
 	RenderWindow::initGlfw();
 
 	RenderWindow joe(800, 600, "hola");
 	Shader::init_shaders();
 
-	std::cerr << "MADE IT PAST THIS PART" << std::endl;
+
+	// Logger logger;
+
+	// std::shared_ptr<Particle> part = std::make_shared<Particle>(10, 3, .6);
+	// logger.attach(part);
+	// return 0;
 	// joe.init_test();
 
 	joe.test2();
-	std::cout << sizeof(Triangle) << std::endl;
+	// joe.tick();
+	// std::cout << sizeof(Triangle) << std::endl;
 	joe.main_loop();
 
 

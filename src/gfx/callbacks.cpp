@@ -14,11 +14,11 @@ void RenderWindow::key_callback(GLFWwindow* window, int key, int scancode, int a
 			keyboard_buttons[key].held = true;
 			return;
 		}
-		keyboard_buttons[key].held = false;
 		keyboard_buttons[key].start_press = current_tick;
 		keyboard_buttons[key].pressed = 1;
 	}
 	if (action == GLFW_RELEASE) {
+		keyboard_buttons[key].held = false;
 		keyboard_buttons[key].pressed = 0;
 	}
 }

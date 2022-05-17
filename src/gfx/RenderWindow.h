@@ -22,6 +22,8 @@
 #include "../core/ShapeFactory.h"
 #include "../core/particle.h"
 
+#include "../logging/logger.h"
+
 struct Button {
 	int start_press;
 	bool pressed, held;
@@ -45,7 +47,7 @@ class RenderWindow {
 		std::vector<std::shared_ptr<Particle> > scene_objects;
 
 		std::vector<std::shared_ptr<Renderable> > objects;
-		int current_tick;
+		int current_tick = 0;
 
 		int d_width, d_height;
 
@@ -59,6 +61,8 @@ class RenderWindow {
 		void norm_no_up_axis(glm::vec3&);
 
 		bool paused = false;
+		
+		Logger logger;
 	protected:
 		void key_callback(GLFWwindow*, int, int, int, int);
 		void framebuffer_size_callback(GLFWwindow*, int, int);

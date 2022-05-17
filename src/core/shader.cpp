@@ -70,7 +70,6 @@ Shader::Shader(std::string vs_path, std::string fs_path) {
 // must be called after RenderWindow init
 void Shader::init_shaders() {
 	shaders[1] = std::make_shared<Shader>("../src/shaders/basic.vs", "../src/shaders/basic.fs");
-	
 }
 
 

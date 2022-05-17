@@ -1,8 +1,8 @@
 // particle.cpp
 
 #include "particle.h"
-// void Particle::get_
-Particle::Particle(double charge, double mass, double radius) {
+
+Particle::Particle(double charge, double mass, double radius) : Loggable() {
 	// radius = r
 	//shader = default;
 	v3d rgb;
@@ -26,10 +26,37 @@ void Particle::tick() {
 	physics->tick();
 
 	mesh->update_position(physics->get_pos());
+
+	particle_time += Global::TIME_STEP;
 }
 void Particle::log_data(std::ofstream& stream) {
+	// log out the data types
+	v3d velocity = physics->get_velocity();
+	v3d force = physics->get_force();
+	v3d pos = physics->get_pos();
+	stream << particle_time << ","
+		   << pos.x << "," << pos.y << "," << pos.z << ","
+		   << velocity.x << "," << velocity.y << "," << velocity.z << ","
+		   << force.x << "," << force.y << "," << force.z << ","
+		   << physics->get_charge() << "," << physics->get_mass() 
+		   << std::endl;
 
-	std::cerr << "hi\n";
+}
+void Particle::log_init(std::ofstream& stream) {
+	std::vector<std::string> column_names = { 
+												"time", 
+												"x_coord", "y_coord", "z_coord", 
+												"x_velocity", "y_velocity", "z_velocity",
+												"x_force", "y_force", "z_force",
+												"charge", "mass"
+											 };
+
+	int sz = column_names.size();
+	for (int i=0; i<sz-1; i++) {
+		stream << column_names[i] << ",";
+	}
+	stream << column_names[sz-1] << std::endl;
+	std::cerr << "HELLO!!?!?!?!\n";
 }
 void Particle::log_dbg() {
 	std::cerr << "INFOS: ";
@@ -38,4 +65,8 @@ void Particle::log_dbg() {
 
 void Particle::set_position(const v3d& pos) {
 	physics->set_position(pos);
+}
+
+Particle::~Particle() {
+	std::cerr << "destroying particle\n";
 }

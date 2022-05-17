@@ -12,3 +12,9 @@ double util::elapsed(const std::chrono::time_point<std::chrono::system_clock> st
 	std::chrono::duration<double> time = end - start;
 	return time.count();
 }
+
+std::string util::get_date() {
+	auto time_now = util::clock();
+	std::time_t now2 = std::chrono::system_clock::to_time_t(time_now);
+	return std::string(std::ctime(&now2));
+}
