@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <math.h>
 #include <vector>
+#include <set>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -44,7 +45,7 @@ class RenderWindow {
 		GLuint vbo;
 		GLuint mvp_uniform;
 
-		std::vector<std::shared_ptr<Particle> > scene_objects;
+		std::set<std::shared_ptr<Particle> > scene_objects;
 
 		std::vector<std::shared_ptr<Renderable> > objects;
 		int current_tick = 0;
@@ -63,6 +64,8 @@ class RenderWindow {
 		bool paused = false;
 		
 		Logger logger;
+
+		v3d magnetic_field;
 	protected:
 		void key_callback(GLFWwindow*, int, int, int, int);
 		void framebuffer_size_callback(GLFWwindow*, int, int);
@@ -83,8 +86,12 @@ class RenderWindow {
 		void main_loop();
 		static void initGlfw();
 
+		void remove_particle(std::shared_ptr<Particle>);
+		void add_particle(std::shared_ptr<Particle>);
+
 		void init_test();
 		void test2();
+		void set_magnetic_field(const v3d&);
 		// static RenderWindow* self;
 };
 

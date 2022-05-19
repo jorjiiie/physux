@@ -36,7 +36,6 @@ Logger::Logger() {
 	// make a new directory!
 	throw_if(!fs::create_directory(DATA_PATH), "directory failed to create");
 #endif
-	std::cerr << "RUNNING CONSTRUCTOR!\n";
 
 }
 

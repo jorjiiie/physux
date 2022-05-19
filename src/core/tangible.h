@@ -31,9 +31,11 @@ class Tangible {
 		void apply_field(const v3d&);
 		void apply_magnetic(const v3d&);
 
+		void reset_force();
 		void make_static();
 		void tick();
 		void set_position(const v3d&);
+		void set_velocity(const v3d&);
 		void log_info();
 		// virtual void tick();
 

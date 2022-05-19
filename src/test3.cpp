@@ -24,16 +24,9 @@ int main() {
 	Shader::init_shaders();
 
 
-	// Logger logger;
-
-	// std::shared_ptr<Particle> part = std::make_shared<Particle>(10, 3, .6);
-	// logger.attach(part);
-	// return 0;
-	// joe.init_test();
 
 	joe.test2();
-	// joe.tick();
-	// std::cout << sizeof(Triangle) << std::endl;
+
 	joe.main_loop();
 
 

@@ -18,3 +18,7 @@ std::string util::get_date() {
 	std::time_t now2 = std::chrono::system_clock::to_time_t(time_now);
 	return std::string(std::ctime(&now2));
 }
+
+void util::print_references(std::shared_ptr<Particle> ptr) {
+	std:: cerr << (ptr.use_count() - 1) << std::endl;
+}

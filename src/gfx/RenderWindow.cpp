@@ -84,6 +84,19 @@ RenderWindow::RenderWindow(int width, int height, std::string name) {
 
 }
 
+void RenderWindow::add_particle(std::shared_ptr<Particle> particle) {
+    // add to set and logger
+    std::cerr << "adding particle" << std::endl;
+    scene_objects.insert(particle);
+    logger.attach(particle);
+}
+void RenderWindow::remove_particle(std::shared_ptr<Particle> particle) {
+    // remove from set and logger
+    std::cerr << "removing particle" << std::endl;
+    scene_objects.erase(particle);
+    logger.remove(particle);
+}
+
 glm::vec3 RenderWindow::calculate_look() {
     return glm::vec3(cos(glm::radians(camera_phi)) * cos(glm::radians(camera_theta)),
                      cos(glm::radians(camera_phi)) * sin(glm::radians(camera_theta)),
@@ -94,13 +107,8 @@ glm::vec3 RenderWindow::calculate_look() {
 void RenderWindow::render() {
     // render all renderables
 
-    //clear z buffer
-
-
-    // generate camera stuff?
+    // generate camera stuff
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float) d_width / (float) d_height, 0.1f, 200.0f);
-
-    // std::cerr << glm::to_string(camera_focus_length * calculate_look() + camera_position) << "\n";
     
     glm::mat4 view = glm::lookAt(
         camera_position,
@@ -115,33 +123,26 @@ void RenderWindow::render() {
     glUniformMatrix4fv(mvp_uniform, 1, GL_FALSE, &transform[0][0]);
 
 
-    // std::cerr << glm::to_string(transform[0]) << std::endl;
-
-    // can put them all into temp rendering arrays
-    // i think that is faster than binding a ton of vbos
-    int cnt=0;
     
-    for (auto prend : scene_objects) {
+    for (auto prend : scene_objects) 
         prend->mesh->render();
-        // std::cout << "rendering " << ++cnt << std::endl;
-    }
     
-    for (auto prend : objects) {
+    
+    // render non-tangibles
+    for (auto prend : objects) 
         prend->render();
-    }
+    
 
-    // std::cout << "hi lol" << std::endl;
-    // glVertexAttribPointer(0);
 }
 void RenderWindow::norm_no_up_axis(glm::vec3& vec) {
     // this just means no z, plus normalize
+    // the proper way to do this would be to find the complement of the vector projected onto the up axis and normalize it
     vec.z = 0;
     vec = glm::normalize(vec);
 }
 
 void RenderWindow::physics_tick() {
 
-    std::vector<v3d> forces;
     for (auto pobj : scene_objects) {
         v3d cumulative_field(0,0,0);
         for (auto pobj_ : scene_objects) {
@@ -153,24 +154,26 @@ void RenderWindow::physics_tick() {
         pobj->physics->apply_field(cumulative_field);
 
     }
-    std::cerr << "Current tick: " << current_tick << " current time: " << current_time << " ";
-    scene_objects[2]->log_dbg();
 
     std::vector<std::shared_ptr<Particle> > to_remove;
 
     //heterogenous data types of the same type :skull:
     v3d cam_pos_tmp(camera_position.x, camera_position.y, camera_position.z);
+
     for (auto pobj : scene_objects) {
         pobj->tick();
         v3d r = cam_pos_tmp - pobj->physics->get_pos();
 
-        // if more than 100k units away just remove
-        if (r.dot(r) > 100000.0) {
+        // if more than 1000 units away, remove
+        if (r.dot(r) > 1000000.0) {
             to_remove.push_back(pobj);
         }
     }
-    for (auto pobj : to_remove) {
 
+    logger.log_data();
+
+    for (auto pobj : to_remove) {
+        remove_particle(pobj);
     }
 }
 
@@ -180,10 +183,11 @@ void RenderWindow::tick() {
     // also does interactions and movement here
 
     current_tick++;
-    logger.log_data();
 
     // should have submethods for "press and hold", "single press" and "pressed" to make this more readable
     // is_pressed_and_hold(key, seconds), is_pressed_single(key), is_pressed(key)
+
+    // movement checks
     if (keyboard_buttons[GLFW_KEY_A].pressed) {
         // move to the side, so cross look with up
         glm::vec3 side_vec = glm::cross(calculate_look(), camera_up);
@@ -218,6 +222,7 @@ void RenderWindow::tick() {
     }
 
 
+    // control check
     if (keyboard_buttons[GLFW_KEY_T].pressed && !keyboard_buttons[GLFW_KEY_T].held) {
         keyboard_buttons[GLFW_KEY_T].held = true;
 
@@ -229,41 +234,17 @@ void RenderWindow::tick() {
 
     }
 
+    // speed up & pause
     int time_steps = 1;
-    if (keyboard_buttons[GLFW_KEY_5].pressed) {
-        Global::TIME_STEP = 500 * Global::DEFAULT_TIME_STEP;
-    } else {
-        Global::TIME_STEP = Global::DEFAULT_TIME_STEP;
-    }
+
     if (keyboard_buttons[GLFW_KEY_0].pressed && !keyboard_buttons[GLFW_KEY_0].held) {
         keyboard_buttons[GLFW_KEY_0].held = true;
         paused = !paused;
     }
 
     if (keyboard_buttons[GLFW_KEY_2].pressed) {
-        time_steps = 500;
+        time_steps = 200;
     }
-
-    if (keyboard_buttons[GLFW_KEY_C].pressed && !keyboard_buttons[GLFW_KEY_C].held) {
-        keyboard_buttons[GLFW_KEY_C].held = true;
-        // add a thing at one unit in the look direction
-        std::shared_ptr<Particle> add_particle = std::make_shared<Particle>(-5,1, 0.5);
-        glm::vec3 particle_position = calculate_look() + camera_position;
-        add_particle->set_position(v3d(particle_position.x, particle_position.y, particle_position.z));
-        scene_objects.push_back(add_particle);
-    }
-    /*
-
-    if (keyboard_buttons[GLFW_KEY_J].pressed) {
-        // move the first thing by 10 or smth
-        objects[0]->update_position(glm::vec3(1.0,1.0,1.0));
-    }
-
-    if (keyboard_buttons[GLFW_KEY_K].pressed) {
-        objects[0]->update_position(glm::vec3(0.0,0.0,0.0));
-
-    }
-    */
 
     // have a key check for the advance one frame
 
@@ -279,6 +260,18 @@ void RenderWindow::tick() {
         Global::TIME_STEP = Global::DEFAULT_TIME_STEP * 0.5;
     }
 
+
+    // add a particle 
+    if (keyboard_buttons[GLFW_KEY_C].pressed && !keyboard_buttons[GLFW_KEY_C].held) {
+        keyboard_buttons[GLFW_KEY_C].held = true;
+
+        std::shared_ptr<Particle> to_add = std::make_shared<Particle>(-5,1, 0.5);
+        glm::vec3 particle_position = calculate_look() + camera_position;
+        to_add->set_position(v3d(particle_position.x, particle_position.y, particle_position.z));
+        add_particle(to_add);
+    }
+
+
     if (!paused || advance_one) {
         while (time_steps--) {
             physics_tick();
@@ -286,6 +279,7 @@ void RenderWindow::tick() {
         }
 
     }
+
     Global::TIME_STEP = Global::DEFAULT_TIME_STEP;
 
 
@@ -301,7 +295,6 @@ void RenderWindow::main_loop() {
 
 
     mvp_uniform = glGetUniformLocation(Shader::shaders[Shader::SHADER_DEFAULT]->get_program(), "camera_mat");
-    std::cerr << mvp_uniform << " mvp uniform" << std::endl;
 
     auto prev = util::clock();
     while(!glfwWindowShouldClose(window))
@@ -316,7 +309,6 @@ void RenderWindow::main_loop() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
         
 
-        // should have time values no?
         this->tick();
         this->render();
 
@@ -326,6 +318,10 @@ void RenderWindow::main_loop() {
         glfwPollEvents();    
     }
 
+}
+
+void RenderWindow::set_magnetic_field(const v3d& field) {
+    magnetic_field = field;
 }
 
 void RenderWindow::init_test() {
@@ -407,11 +403,11 @@ void RenderWindow::test2() {
     // p.physics->apply_field(p3.physics->get_electric_field(*(p.physics)));
     // p.tick();
     // p.log_dbg();
-    scene_objects.push_back(p);
-    scene_objects.push_back(p3);
-    scene_objects.push_back(p2);
-    
-    logger.attach(p2);
+    scene_objects.insert(p);
+    scene_objects.insert(p3);
+
+    add_particle(p2);
+
 }
 
 

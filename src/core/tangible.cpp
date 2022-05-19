@@ -52,11 +52,16 @@ void Tangible::tick() {
 		pos += (velocity * Global::TIME_STEP);
 
 	//reset so each tick it will accumulate
+}
+void Tangible::reset_force() {
 	force_tick = v3d(0,0,0);
 }
 
 void Tangible::set_position(const v3d& position) {
 	pos = position;
+}
+void Tangible::set_velocity(const v3d& v) {
+	velocity = v;
 }
 
 void Tangible::log_info() {

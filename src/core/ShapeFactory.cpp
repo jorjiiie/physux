@@ -12,7 +12,7 @@ std::vector<Triangle> ShapeFactory::generate_sphere(double radius, const v3d& po
 
 	std::vector<std::vector< v3d> > vertices(vslices+1, std::vector<v3d>(hslices+1));
 
-	std::cerr << rgb << " " << radius  << "\n";
+	// std::cerr << rgb << " " << radius  << "\n";
 
 	double invV = 1.0 / vslices;
 	double invH = 1.0 / hslices;
@@ -42,7 +42,7 @@ std::vector<Triangle> ShapeFactory::generate_sphere(double radius, const v3d& po
 		}
 	}
 	
-		std::cerr << mesh.size() << " mesh triangles!\n";
+		// std::cerr << mesh.size() << " mesh triangles!\n";
 	return mesh;
 }
 

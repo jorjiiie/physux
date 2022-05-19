@@ -41,6 +41,7 @@ void Particle::log_data(std::ofstream& stream) {
 		   << physics->get_charge() << "," << physics->get_mass() 
 		   << std::endl;
 
+	physics->reset_force();
 }
 void Particle::log_init(std::ofstream& stream) {
 	std::vector<std::string> column_names = { 
@@ -51,12 +52,13 @@ void Particle::log_init(std::ofstream& stream) {
 												"charge", "mass"
 											 };
 
+
 	int sz = column_names.size();
 	for (int i=0; i<sz-1; i++) {
 		stream << column_names[i] << ",";
 	}
 	stream << column_names[sz-1] << std::endl;
-	std::cerr << "HELLO!!?!?!?!\n";
+
 }
 void Particle::log_dbg() {
 	std::cerr << "INFOS: ";

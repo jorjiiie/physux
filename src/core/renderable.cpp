@@ -23,7 +23,6 @@ Renderable::Renderable(std::vector<Triangle> p_mesh, std::shared_ptr<Shader> psh
     glBufferData(GL_ARRAY_BUFFER, sizeof(Triangle) * mesh.size(), &mesh[0], GL_STREAM_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    std::cerr << "Hi\n";
     position = v3d(0,0,0);
 }
 
