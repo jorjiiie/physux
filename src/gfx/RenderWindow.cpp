@@ -84,13 +84,13 @@ RenderWindow::RenderWindow(int width, int height, std::string name) {
 
 }
 
-void RenderWindow::add_particle(std::shared_ptr<Particle> particle) {
+void RenderWindow::add_particle(std::shared_ptr<Particle>& particle) {
     // add to set and logger
     std::cerr << "adding particle" << std::endl;
     scene_objects.insert(particle);
     logger.attach(particle);
 }
-void RenderWindow::remove_particle(std::shared_ptr<Particle> particle) {
+void RenderWindow::remove_particle(std::shared_ptr<Particle>& particle) {
     // remove from set and logger
     std::cerr << "removing particle" << std::endl;
     scene_objects.erase(particle);
@@ -152,7 +152,7 @@ void RenderWindow::physics_tick() {
         }
 
         pobj->physics->apply_field(cumulative_field);
-
+        pobj->physics->apply_magnetic(magnetic_field);
     }
 
     std::vector<std::shared_ptr<Particle> > to_remove;
@@ -161,7 +161,9 @@ void RenderWindow::physics_tick() {
     v3d cam_pos_tmp(camera_position.x, camera_position.y, camera_position.z);
 
     for (auto pobj : scene_objects) {
+
         pobj->tick();
+
         v3d r = cam_pos_tmp - pobj->physics->get_pos();
 
         // if more than 1000 units away, remove
@@ -188,37 +190,39 @@ void RenderWindow::tick() {
     // is_pressed_and_hold(key, seconds), is_pressed_single(key), is_pressed(key)
 
     // movement checks
+    glm::vec3 movement_vector(0,0,0);
+
     if (keyboard_buttons[GLFW_KEY_A].pressed) {
         // move to the side, so cross look with up
         glm::vec3 side_vec = glm::cross(calculate_look(), camera_up);
         norm_no_up_axis(side_vec);
-        camera_position += -side_vec * MOVEMENT_SPEED;
+        movement_vector += -side_vec * MOVEMENT_SPEED;
     }
     
     if (keyboard_buttons[GLFW_KEY_D].pressed) {
         glm::vec3 side_vec = glm::cross(calculate_look(), camera_up);
         norm_no_up_axis(side_vec);
-        camera_position += side_vec * MOVEMENT_SPEED;
+        movement_vector += side_vec * MOVEMENT_SPEED;
     }
 
     if (keyboard_buttons[GLFW_KEY_W].pressed) {
         glm::vec3 delta_vec = calculate_look();
         norm_no_up_axis(delta_vec);
-        camera_position += delta_vec * MOVEMENT_SPEED;
+        movement_vector += delta_vec * MOVEMENT_SPEED;
     }
 
     if (keyboard_buttons[GLFW_KEY_S].pressed) {
         glm::vec3 delta_vec = calculate_look();
         norm_no_up_axis(delta_vec);
-        camera_position += -delta_vec * MOVEMENT_SPEED;
+        movement_vector += -delta_vec * MOVEMENT_SPEED;
     }
 
     if (keyboard_buttons[GLFW_KEY_LEFT_SHIFT].pressed) {
-        camera_position += -camera_up * MOVEMENT_SPEED;
+        movement_vector += -camera_up * MOVEMENT_SPEED;
     }
 
     if (keyboard_buttons[GLFW_KEY_SPACE].pressed) {
-        camera_position += camera_up * MOVEMENT_SPEED;
+        movement_vector += camera_up * MOVEMENT_SPEED;
     }
 
 
@@ -259,6 +263,11 @@ void RenderWindow::tick() {
         advance_one = true;
         Global::TIME_STEP = Global::DEFAULT_TIME_STEP * 0.5;
     }
+    int movement_cycles = 1;
+    if (keyboard_buttons[GLFW_KEY_F].pressed) {
+        keyboard_buttons[GLFW_KEY_F].held = true;
+        movement_cycles = 10;
+    }
 
 
     // add a particle 
@@ -277,7 +286,9 @@ void RenderWindow::tick() {
             physics_tick();
             current_time += Global::TIME_STEP;
         }
-
+    }
+    while (movement_cycles--) {
+        camera_position += movement_vector;
     }
 
     Global::TIME_STEP = Global::DEFAULT_TIME_STEP;
@@ -407,6 +418,18 @@ void RenderWindow::test2() {
     scene_objects.insert(p3);
 
     add_particle(p2);
+
+}
+
+void RenderWindow::magnetic_field_test() {
+    std::shared_ptr<Particle> p = std::make_shared<Particle>(5,1,0.5);
+
+    p->physics->set_velocity(v3d(0.02,0,0));
+
+
+    set_magnetic_field(v3d(0,1,0));
+
+    add_particle(p);
 
 }
 

@@ -39,7 +39,7 @@ void Tangible::apply_field(const v3d& field) {
 
 void Tangible::apply_magnetic(const v3d& field) {
 	// f = qv x b;
-	v3d force = (velocity.cross(field)) * charge;
+	v3d force = (velocity.cross(field)) * charge * Global::CONSTANT_MAGNETIC * 2;
 
 	force_tick += force;
 

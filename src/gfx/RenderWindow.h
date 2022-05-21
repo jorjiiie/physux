@@ -86,12 +86,14 @@ class RenderWindow {
 		void main_loop();
 		static void initGlfw();
 
-		void remove_particle(std::shared_ptr<Particle>);
-		void add_particle(std::shared_ptr<Particle>);
+		void remove_particle(std::shared_ptr<Particle>&);
+		void add_particle(std::shared_ptr<Particle>&);
 
 		void init_test();
 		void test2();
 		void set_magnetic_field(const v3d&);
+
+		void magnetic_field_test();
 		// static RenderWindow* self;
 };
 

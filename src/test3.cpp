@@ -26,6 +26,7 @@ int main() {
 
 
 	joe.test2();
+	// joe.magnetic_field_test();
 
 	joe.main_loop();
 

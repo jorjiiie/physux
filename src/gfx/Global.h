@@ -12,6 +12,7 @@ struct Global {
 	static constexpr double DEFAULT_TIME_STEP = 0.1;
 	// static constexpr double CONSTANT_ELECTRIC = 1.0;
 	static constexpr double CONSTANT_ELECTRIC = 0.0001;
+	static constexpr double CONSTANT_MAGNETIC = 0.0001;
 	static constexpr double EPSILON = 0.0001;
 	inline static std::map<GLFWwindow*, RenderWindow*> window_map;
 };

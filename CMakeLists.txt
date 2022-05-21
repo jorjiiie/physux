@@ -51,7 +51,7 @@ list (REMOVE_DUPLICATES R_INCLUDE_DIRS)
 message(STATUS "sources: ${R_SOURCES}")
 message(STATUS "headers: ${R_HEADER}")
 
-add_executable(renderer ${R_SOURCES} src/glad.c)
+add_executable(renderer ${R_SOURCES} lib/glad/glad/glad.c)
 
 target_compile_features(renderer PUBLIC cxx_std_17)
 
