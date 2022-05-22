@@ -42,6 +42,8 @@
 *.idb
 *.pdb
 .DS_STORE
+.DS_Store
+*/.DS_Store
 
 # Kernel Module Compile Results
 *.mod*
