@@ -141,6 +141,8 @@ void RenderWindow::norm_no_up_axis(glm::vec3& vec) {
     vec = glm::normalize(vec);
 }
 
+
+// TODO - move to PhysicsComponent
 void RenderWindow::physics_tick() {
 
     for (auto pobj : scene_objects) {
@@ -287,9 +289,7 @@ void RenderWindow::tick() {
             current_time += Global::TIME_STEP;
         }
     }
-    while (movement_cycles--) {
-        camera_position += movement_vector;
-    }
+    camera_position += (movement_vector * (1.0f * movement_cycles));
 
     Global::TIME_STEP = Global::DEFAULT_TIME_STEP;
 

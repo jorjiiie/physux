@@ -50,8 +50,10 @@ class RenderWindow {
 		std::vector<std::shared_ptr<Renderable> > objects;
 		int current_tick = 0;
 
+		// :skull: data_width data_height
 		int d_width, d_height;
 
+		// could be abstracted to a camera struct
 		glm::vec3 camera_position, camera_up;
 		float camera_theta, camera_phi, camera_focus_length;
 
@@ -66,6 +68,8 @@ class RenderWindow {
 		Logger logger;
 
 		v3d magnetic_field;
+
+		// std::unique_pointer<PhysicsComponent> physics_component;
 	protected:
 		void key_callback(GLFWwindow*, int, int, int, int);
 		void framebuffer_size_callback(GLFWwindow*, int, int);
@@ -94,6 +98,9 @@ class RenderWindow {
 		void set_magnetic_field(const v3d&);
 
 		void magnetic_field_test();
+
+
+		Button query_key(int);
 		// static RenderWindow* self;
 };
 
